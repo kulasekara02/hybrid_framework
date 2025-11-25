@@ -24,13 +24,70 @@ warnings.filterwarnings('ignore')
 import tensorflow as tf
 from tensorflow import keras
 
-# Default model paths (using the latest trained model)
-DEFAULT_MODEL_TIMESTAMP = "20251104_171930"
+# Default results directory
 DEFAULT_RESULTS_DIR = "results"
-DEFAULT_LSTM_PATH = os.path.join(DEFAULT_RESULTS_DIR, f"lstm_model_{DEFAULT_MODEL_TIMESTAMP}.h5")
-DEFAULT_RF_PATH = os.path.join(DEFAULT_RESULTS_DIR, f"rf_model_{DEFAULT_MODEL_TIMESTAMP}.pkl")
-DEFAULT_META_LEARNER_PATH = os.path.join(DEFAULT_RESULTS_DIR, f"meta_learner_{DEFAULT_MODEL_TIMESTAMP}.pkl")
-DEFAULT_PREPROCESSING_PATH = os.path.join(DEFAULT_RESULTS_DIR, f"preprocessing_objects_{DEFAULT_MODEL_TIMESTAMP}.pkl")
+
+
+def get_latest_model_timestamp(results_dir=DEFAULT_RESULTS_DIR):
+    """
+    Scan the results directory to find the latest model timestamp.
+    
+    Parameters
+    ----------
+    results_dir : str
+        Path to the results directory
+    
+    Returns
+    -------
+    str
+        The latest model timestamp, or None if no models found
+    """
+    import re
+    timestamps = set()
+    
+    if not os.path.exists(results_dir):
+        return None
+    
+    for filename in os.listdir(results_dir):
+        # Look for timestamp pattern in filenames (YYYYMMDD_HHMMSS)
+        match = re.search(r'_(\d{8}_\d{6})\.(h5|pkl)$', filename)
+        if match:
+            timestamps.add(match.group(1))
+    
+    if not timestamps:
+        return None
+    
+    # Return the latest timestamp (highest value = most recent)
+    return max(timestamps)
+
+
+def get_default_model_paths(results_dir=DEFAULT_RESULTS_DIR):
+    """
+    Get the default model paths using the latest available models.
+    
+    Parameters
+    ----------
+    results_dir : str
+        Path to the results directory
+    
+    Returns
+    -------
+    dict
+        Dictionary with paths to lstm, rf, meta_learner, and preprocessing models
+    """
+    timestamp = get_latest_model_timestamp(results_dir)
+    
+    if timestamp is None:
+        # Fallback to a known timestamp if no models found
+        timestamp = "20251104_171930"
+        print(f"Warning: No models found in {results_dir}. Using fallback timestamp: {timestamp}")
+    
+    return {
+        'lstm_path': os.path.join(results_dir, f"lstm_model_{timestamp}.h5"),
+        'rf_path': os.path.join(results_dir, f"rf_model_{timestamp}.pkl"),
+        'meta_learner_path': os.path.join(results_dir, f"meta_learner_{timestamp}.pkl"),
+        'preprocessing_path': os.path.join(results_dir, f"preprocessing_objects_{timestamp}.pkl")
+    }
 
 
 def load_models(lstm_path=None, rf_path=None, meta_learner_path=None, preprocessing_path=None):
@@ -53,11 +110,13 @@ def load_models(lstm_path=None, rf_path=None, meta_learner_path=None, preprocess
     tuple
         (lstm_model, rf_model, meta_learner, preprocessing_objects)
     """
-    # Use defaults if not provided
-    lstm_path = lstm_path or DEFAULT_LSTM_PATH
-    rf_path = rf_path or DEFAULT_RF_PATH
-    meta_learner_path = meta_learner_path or DEFAULT_META_LEARNER_PATH
-    preprocessing_path = preprocessing_path or DEFAULT_PREPROCESSING_PATH
+    # Get default paths if not provided
+    if not all([lstm_path, rf_path, meta_learner_path, preprocessing_path]):
+        defaults = get_default_model_paths()
+        lstm_path = lstm_path or defaults['lstm_path']
+        rf_path = rf_path or defaults['rf_path']
+        meta_learner_path = meta_learner_path or defaults['meta_learner_path']
+        preprocessing_path = preprocessing_path or defaults['preprocessing_path']
     
     print(f"Loading LSTM model from: {lstm_path}")
     # Try to load the model with compile=False to avoid compatibility issues
@@ -178,12 +237,13 @@ def create_temporal_sequences(df_temporal, df_static, sequence_length=32):
         'weekly_engagement', 'weekly_attendance',
         'weekly_assignments_submitted', 'weekly_quiz_attempts'
     ]
+    n_features = len(temporal_features)
     
     # Check which temporal features are available
     available_temporal = [f for f in temporal_features if f in df_temporal.columns]
     if not available_temporal:
         print("Warning: No temporal features found. Using zeros.")
-        return np.zeros((len(df_static), sequence_length, len(temporal_features)))
+        return np.zeros((len(df_static), sequence_length, n_features))
     
     sequences_dict = {}
     
@@ -191,12 +251,15 @@ def create_temporal_sequences(df_temporal, df_static, sequence_length=32):
     for student_id, group in df_temporal.groupby('student_id'):
         group = group.sort_values('week_index')
         
-        # Get feature values
-        feature_data = group[available_temporal].values
+        # Get feature values - use all defined features, with zeros for missing ones
+        feature_data = np.zeros((len(group), n_features))
+        for i, feat in enumerate(temporal_features):
+            if feat in available_temporal:
+                feature_data[:, i] = group[feat].values
         
         # Pad or truncate to sequence_length
         if len(feature_data) < sequence_length:
-            padding = np.zeros((sequence_length - len(feature_data), len(available_temporal)))
+            padding = np.zeros((sequence_length - len(feature_data), n_features))
             feature_data = np.vstack([padding, feature_data])
         elif len(feature_data) > sequence_length:
             feature_data = feature_data[-sequence_length:]
@@ -209,7 +272,7 @@ def create_temporal_sequences(df_temporal, df_static, sequence_length=32):
         if student_id in sequences_dict:
             sequences.append(sequences_dict[student_id])
         else:
-            sequences.append(np.zeros((sequence_length, len(available_temporal))))
+            sequences.append(np.zeros((sequence_length, n_features)))
     
     sequences_array = np.array(sequences)
     
@@ -340,7 +403,9 @@ def test_model(static_data_path, temporal_data_path=None, output_path=None,
     if not df_temporal.empty:
         X_temporal = create_temporal_sequences(df_temporal, df_static)
     else:
-        sequence_length = preprocessing.get('sequence_length', 32) or 32
+        sequence_length = preprocessing.get('sequence_length')
+        if sequence_length is None:
+            sequence_length = 32  # Default sequence length
         X_temporal = np.zeros((len(df_static), sequence_length, 4))
     
     print(f"  Static features shape: {X_static.shape}")

@@ -16,7 +16,7 @@ Before testing the model, ensure you have the following:
 
 Install dependencies:
 ```bash
-pip install numpy pandas tensorflow scikit-learn joblib
+pip install numpy pandas "tensorflow>=2.0,<3.0" scikit-learn joblib
 ```
 
 ## Trained Model Files
