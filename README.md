@@ -124,48 +124,6 @@ Simply execute all cells in `hybrid_framework_complete.ipynb` sequentially:
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│              HYBRID PREDICTION FRAMEWORK                │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Temporal Features (32 weeks × 4 variables)             │
-│  ├─ weekly_engagement                                   │
-│  ├─ weekly_attendance                                   │
-│  ├─ weekly_assignments_submitted                        │
-│  └─ weekly_quiz_attempts                                │
-│           ↓                                             │
-│  ┌──────────────────────────────────┐                  │
-│  │  LSTM NETWORK                    │                  │
-│  │  - Layer 1: 64 units + Dropout   │                  │
-│  │  - Layer 2: 32 units + BatchNorm │                  │
-│  │  - Output: 32 embeddings         │                  │
-│  └────────────┬─────────────────────┘                  │
-│               │                                         │
-│               │                                         │
-│  Static Features (40+ variables)                        │
-│  ├─ Demographics (age, gender, country)                 │
-│  ├─ Cultural (distance, language, teaching style)       │
-│  └─ Academic (GPA, credits, attendance)                 │
-│           ↓                                             │
-│  ┌──────────────────────────────────┐                  │
-│  │  RANDOM FOREST                   │                  │
-│  │  - Trees: 200                    │                  │
-│  │  - Max depth: 20                 │                  │
-│  │  - Bootstrap + OOB scoring       │                  │
-│  └────────────┬─────────────────────┘                  │
-│               │                                         │
-│               ↓                                         │
-│  ┌─────────────────────────────────────┐               │
-│  │   META-LEARNER (Logistic Reg)      │               │
-│  │   Fuses: [LSTM_pred, RF_pred]      │               │
-│  └──────────────┬──────────────────────┘               │
-│                 ↓                                       │
-│     Final Success Probability                          │
-│     + Risk Classification (Low/Med/High)               │
-│     + Explainability (Root Causes)                     │
-└─────────────────────────────────────────────────────────┘
-```
 
 ### Performance Metrics
 - **Accuracy**: [X]% (validation set)
@@ -260,24 +218,6 @@ Simply execute all cells in `hybrid_framework_complete.ipynb` sequentially:
 3. ✅ Framework generalizability testing
 4. ✅ Ethical research (no student privacy risks)
 
-### Next: Real Data Collection (3 Paths)
-
-**Path A: Institutional Partnership** (2-3 months)
-- Collaborate with Latvian universities
-- 1,000-3,000 students (anonymized)
-- Authentic patterns, large-scale
-
-**Path B: Survey Data** (4-6 weeks) ⭐ RECOMMENDED
-- 55-question instrument ready
-- Target: 200-300 international students
-- Original data, thesis-worthy
-
-**Path C: Public Dataset (OULAD)** (Immediate)
-- 32,593 students, 7 courses
-- Proves framework transferability
-- Large-scale validation
-
-**Recommended Strategy**: Path B + C (survey + OULAD) for comprehensive validation
 
 ---
 
@@ -484,7 +424,7 @@ MIT License - See [LICENSE](LICENSE) for details
 ---
 
 **Last Updated**: November 22, 2025  
-**Version**: 2.0  
+**Version**: 6.0  
 **Status**: ✅ Ready for advisor review & real data integration
 
 ---
