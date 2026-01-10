@@ -27,35 +27,8 @@ First machine learning system to **systematically integrate cultural adaptation 
 ```
 hybrid_framework/
 │
-├── 📓 hybrid_framework_complete.ipynb          # Main implementation (Jupyter)
+├── 📓 test2.ipynb          # Main implementation (Jupyter)
 │   └── Complete framework with all models + analysis
-│
-├── 📄 DATASET_AND_METHODOLOGY_DOCUMENTATION.md  # Comprehensive methodology (15 pages)
-│   ├── Dataset information & justification
-│   ├── Model architecture details
-│   ├── Training configuration
-│   └── Path to real-world deployment
-│
-├── 📄 THESIS_ABSTRACT_UNIQUE.md                # Uniqueness positioning (12 pages)
-│   ├── 4 distinct contributions
-│   ├── Literature comparison (50 papers)
-│   ├── Publication strategy
-│   └── Expected impact
-│
-├── 📄 SURVEY_QUESTIONNAIRE.md                  # Data collection instrument (55 questions)
-│   ├── Demographics (9 Q)
-│   ├── Cultural adaptation (8 Q)
-│   ├── Academic performance (10 Q)
-│   ├── Engagement (10 Q)
-│   ├── Financial situation (6 Q)
-│   ├── Support & well-being (8 Q)
-│   └── Self-assessment (4 Q)
-│
-├── 📄 PROFESSOR_MEETING_PREP.md                # Meeting preparation document
-│   ├── Addressing dataset concerns
-│   ├── Demonstrating uniqueness
-│   ├── Real data acquisition plan
-│   └── Prepared responses to questions
 │
 ├── 📂 uploads/                                  # Input datasets
 │   ├── international_students_static_latvia.csv         (1,501 students)
