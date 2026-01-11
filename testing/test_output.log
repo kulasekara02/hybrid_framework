@@ -1,0 +1,99 @@
+WARNING:tensorflow:From C:\Users\kule9\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\backend\tensorflow\core.py:232: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+WARNING:absl:Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+Traceback (most recent call last):
+  File "C:\Users\kule9\Videos\hybrid_framework\testing\test_hybrid.py", line 250, in preprocess_data
+    X_static_scaled = scaler.transform(X_static)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kule9\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\sklearn\utils\_set_output.py", line 316, in wrapped
+    data_to_wrap = f(self, X, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kule9\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\sklearn\preprocessing\_data.py", line 1094, in transform
+    X = validate_data(
+        ^^^^^^^^^^^^^^
+  File "C:\Users\kule9\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\sklearn\utils\validation.py", line 2877, in validate_data
+    _check_feature_names(_estimator, X, reset=reset)
+  File "C:\Users\kule9\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\sklearn\utils\validation.py", line 2729, in _check_feature_names
+    raise ValueError(message)
+ValueError: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- country_home_encoded
+- country_host_encoded
+- gender_encoded
+- institution_encoded
+- language_proficiency_encoded
+- ...
+
+
+======================================================================
+  HYBRID MODEL TESTING
+======================================================================
+
+Testing Configuration:
+  Model: 20260111_023557
+  Static Data: test_data/synthetic_static_20260111_023313.csv
+  Temporal Data: test_data/synthetic_temporal_20260111_023313.csv
+  Results Directory: test_results/
+
+[Step 1] Loading Models
+----------------------------------------------------------------------
+Model timestamp: 20260111_023557
+Loading from: ../results/
+
+[+] LSTM loaded: lstm_model_20260111_023557.h5
+[+] Random Forest loaded: rf_model_20260111_023557.pkl
+[+] Gradient Boosting loaded: gb_model_20260111_023557.pkl
+[+] Meta-learner loaded: meta_learner_20260111_023557.pkl
+[+] Preprocessing objects loaded: preprocessing_objects_20260111_023557.pkl
+
+[SUCCESS] All models loaded successfully!
+
+[Step 2] Loading Test Data
+----------------------------------------------------------------------
+Static data: test_data/synthetic_static_20260111_023313.csv
+  -> 1000 students
+  -> 43 features
+  -> Success rate: 55.0%
+
+Temporal data: test_data/synthetic_temporal_20260111_023313.csv
+  -> 32000 records
+  -> 9 features
+  -> 32 weeks per student
+
+[SUCCESS] Data loaded successfully!
+
+[Step 3] Preprocessing Data
+----------------------------------------------------------------------
+Preprocessing objects loaded
+  Scaler: StandardScaler
+  Label encoders: 13 columns
+
+Initial features: 40
+Samples: 1000
+Success rate: 55.0%
+
+Encoding 11 categorical features...
+  Warning: New categories in 'institution', using mode
+  Warning: New categories in 'program_id', using mode
+  Warning: New categories in 'country_home', using mode
+  [+] Encoded country_host using saved encoder
+  Warning: New categories in 'subject_field', using mode
+  Warning: New categories in 'study_level', using mode
+  [+] Encoded study_mode using saved encoder
+  [+] Encoded gender using saved encoder
+  [+] Encoded marital_status using saved encoder
+  Warning: New categories in 'support_program', using mode
+  Warning: New categories in 'scholarship_status', using mode
+[+] After encoding: 40 features
+[+] Selecting saved feature columns: 38 features
+  Warning: Missing columns: {'language_proficiency_encoded', 'teaching_style_difference_encoded'}
+
+[-] Error in preprocessing: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- country_home_encoded
+- country_host_encoded
+- gender_encoded
+- institution_encoded
+- language_proficiency_encoded
+- ...
+

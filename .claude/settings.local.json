@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c:*)"
+      "Bash(python -c:*)",
+      "Bash(timeout 180 python:*)",
+      "Bash(tee:*)",
+      "Bash(python test_hybrid.py:*)"
     ],
     "deny": [],
     "ask": []
