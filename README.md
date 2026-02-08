@@ -370,6 +370,9 @@ MIT License - See [LICENSE](LICENSE) for details
 | `THESIS_ABSTRACT_UNIQUE.md` | Uniqueness positioning | 12 |
 | `SURVEY_QUESTIONNAIRE.md` | Data collection instrument | 8 |
 | `PROFESSOR_MEETING_PREP.md` | Meeting preparation | 10 |
+| `MASTER_DEFENSE_QUESTIONS_ANSWERS.md` | Defense committee feedback answers (detailed) | 10 |
+| `DEFENSE_SLIDES_CONTENT.md` | Defense presentation slides (concise) | 4 |
+| `README_DEFENSE_DOCS.md` | Usage guide for defense documents | 8 |
 
 ---
 
